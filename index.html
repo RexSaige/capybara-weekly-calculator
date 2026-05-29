@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>水豚馬拉松 每週任務互動計算機 v4</title>
+<style>
+  :root{
+    --bg:#f6f8fb; --card:#fff; --text:#172033; --muted:#667085; --line:#e5e7eb;
+    --blue:#2563eb; --blue2:#dbeafe; --orange:#f59e0b; --green:#16a34a; --red:#dc2626;
+    --shadow:0 10px 25px rgba(15,23,42,.08); --radius:20px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Microsoft JhengHei",Arial,sans-serif;}
+  body{padding:18px 14px 34px;}
+  .wrap{max-width:980px;margin:0 auto;}
+  header{padding:8px 2px 16px;}
+  h1{font-size:28px;line-height:1.2;margin:0 0 10px;font-weight:850;letter-spacing:-.5px;}
+  .desc{color:var(--muted);font-size:16px;line-height:1.65;margin:0;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin:14px 0;}
+  .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .stat{border:1px solid var(--line);border-radius:18px;padding:14px;background:#fff;}
+  .stat.full{grid-column:1 / -1;}
+  .label{font-size:14px;color:var(--muted);margin-bottom:6px;}
+  .num{font-size:30px;line-height:1;font-weight:850;letter-spacing:-.5px;}
+  .progress{height:18px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:16px 0 12px;}
+  .bar{height:100%;width:0%;background:linear-gradient(90deg,#60a5fa,#2563eb);border-radius:999px;transition:width .18s ease;}
+  .btn-row{display:grid;gap:10px;margin-top:12px;}
+  button{border:0;border-radius:16px;padding:15px 14px;font-size:16px;font-weight:800;cursor:pointer;touch-action:manipulation;}
+  .primary{background:var(--blue);color:white;}
+  .warning{background:var(--orange);color:#111827;}
+  .secondary{background:#e5e7eb;color:#111827;}
+  .tab-wrap{position:sticky;top:0;z-index:10;background:rgba(246,248,251,.96);backdrop-filter:blur(8px);padding:8px 0 10px;margin:2px -14px 8px;border-bottom:1px solid #eef0f3;}
+  .tabs{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:2px 14px 8px;scrollbar-width:auto;-webkit-overflow-scrolling:touch;}
+  .tabs::-webkit-scrollbar{height:8px}.tabs::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}.tabs::-webkit-scrollbar-track{background:#e5e7eb;border-radius:999px}
+  .tab{min-width:92px;white-space:nowrap;border:1px solid var(--line);background:#fff;color:#334155;padding:12px 14px;border-radius:999px;box-shadow:none;}
+  .tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .day-panel{display:none;}
+  .day-panel.active{display:block;}
+  .day-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:14px;}
+  h2{font-size:24px;margin:0;font-weight:850;}
+  .mini{font-size:13px;color:var(--muted);}
+  .task-list{display:grid;gap:10px;}
+  .task{display:grid;grid-template-columns:1fr 112px;gap:10px;align-items:center;border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;}
+  .task-name{font-size:16px;font-weight:800;margin-bottom:4px;}
+  .task-meta{font-size:13px;color:var(--muted);line-height:1.35;}
+  input[type="number"]{width:100%;font-size:20px;font-weight:800;text-align:center;padding:12px 8px;border:1.5px solid #cbd5e1;border-radius:14px;background:#fff;color:var(--text);}
+  input[type="number"]:focus{outline:3px solid #bfdbfe;border-color:#2563eb;}
+  .day-total{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 0;}
+  .pill{border-radius:16px;padding:12px;background:#f8fafc;border:1px solid var(--line);}
+  .pill strong{display:block;font-size:20px;margin-top:4px;}
+  .warn{color:var(--red);font-weight:800;font-size:13px;margin-top:6px;display:none;}
+  .recommend{font-size:14px;line-height:1.55;color:#344054;background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:12px;}
+  .note{margin-top:14px;border-top:1px dashed #cbd5e1;padding-top:14px;}
+  .note h3{font-size:17px;margin:0 0 8px;}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:#fff;}
+  table{border-collapse:collapse;width:100%;min-width:360px;font-size:14px;}
+  th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;}
+  th{background:#f1f5f9;color:#334155;font-weight:850;}
+  tr:last-child td{border-bottom:0;}
+  .stage-grid{display:grid;grid-template-columns:repeat(5,minmax(92px,1fr));gap:8px;overflow-x:auto;padding-bottom:4px;}
+  .stage{border:1px solid var(--line);border-radius:14px;padding:10px;background:#f8fafc;min-width:92px;}
+  .stage.done{background:#ecfdf5;border-color:#86efac;}
+  .stage .t{font-size:12px;color:var(--muted)} .stage .v{font-size:16px;font-weight:850;margin-top:4px;}
+  .week-table{min-width:680px;}
+  @media (min-width:720px){
+    body{padding:24px}.summary-grid{grid-template-columns:1.2fr 1fr 1fr}.stat.full{grid-column:auto}.btn-row{grid-template-columns:repeat(4,1fr)}.task{grid-template-columns:1fr 140px}.day-total{grid-template-columns:repeat(4,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>水豚馬拉松 每週任務互動計算機</h1>
+    <p class="desc">每日目標 245,000 分拿滿 6 顆星；每週星星獎勵上限 30 顆。填入各任務完成次數後會即時計算分數、缺口、階段獎勵與補滿建議。</p>
+  </header>
+
+  <section class="card">
+    <div class="summary-grid">
+      <div class="stat full"><div class="label">本日積分</div><div class="num" id="todayScore">0</div></div>
+      <div class="stat"><div class="label">距離 245,000</div><div class="num" id="todayNeed">245,000</div></div>
+      <div class="stat"><div class="label">本日星星</div><div class="num"><span id="todayStars">0</span> / 6</div></div>
+    </div>
+    <div class="progress"><div class="bar" id="progressBar"></div></div>
+    <div class="btn-row">
+      <button class="primary" id="autoMinBtn">自動補足：最少操作次數</button>
+      <button class="warning" id="autoLimitedBtn">自動補足：先做有限次數任務</button>
+      <button class="secondary" id="clearDayBtn">清除本日</button>
+      <button class="secondary" id="clearAllBtn">清除全部</button>
+    </div>
+  </section>
+
+  <div class="tab-wrap">
+    <div class="tabs" id="tabs" aria-label="週一到週日頁籤"></div>
+  </div>
+
+  <main id="panels"></main>
+
+  <section class="card">
+    <h2>本日階段獎勵</h2>
+    <div class="stage-grid" id="stages"></div>
+  </section>
+
+  <section class="card">
+    <h2>每週統計</h2>
+    <div class="day-total" style="margin-bottom:12px;">
+      <div class="pill"><span class="label">本週總積分</span><strong id="weekScore">0</strong></div>
+      <div class="pill"><span class="label">本週星星</span><strong><span id="weekStars">0</span> / 30</strong></div>
+      <div class="pill"><span class="label">每週大獎</span><strong id="weeklyPrize">未達成</strong></div>
+      <div class="pill"><span class="label">距離 30 星</span><strong id="weekNeedStars">30</strong></div>
+    </div>
+    <div class="table-scroll"><table class="week-table" id="weekTable"></table></div>
+  </section>
+</div>
+
+<script>
+(function(){
+'use strict';
+const TARGET = 245000;
+const STAGES = [
+  {score:5600, stars:1}, {score:18750, stars:1}, {score:48750, stars:1}, {score:116000, stars:1}, {score:245000, stars:2}
+];
+const dayDefs = [
+  {key:'mon', label:'週一', title:'週一｜裝備寶箱', tasks:[
+    {id:'stamina', name:'消耗體力', point:75, unit:'體力'},
+    {id:'equipBox', name:'指定裝備寶箱', point:3000, unit:'次'},
+    {id:'heroSupply', name:'英雄補給寶箱', point:300, unit:'次', def:1},
+    {id:'adventurerSupply', name:'冒險者補給寶箱', point:100, unit:'次', def:4}
+  ], notes:[{title:'體力消耗詳細資訊', headers:['遊歷倍率','遊歷1次'], rows:[['x1(5)','375'],['x3(15)','1,125'],['x5(25)','1,875'],['x10(50)','3,750'],['x20(100)','7,500'],['x50(250)','18,750']]},{title:'困難副本體力資訊', headers:['困難倍率','困難一次'], rows:[['x1(15)','1,125'],['x2(30)','2,250'],['x3(45)','3,375'],['x20(300)','22,500']]}]},
+  {key:'tue', label:'週二', title:'週二｜寵物養成', tasks:[
+    {id:'goblinMiner', name:'哥布林礦工', point:40, unit:'次', limit:200},
+    {id:'spiritStone', name:'消耗靈石', point:15, unit:'顆'}
+  ]},
+  {key:'wed', label:'週三', title:'週三｜寵物蛋', tasks:[
+    {id:'guildRaid', name:'公會討伐', point:3750, unit:'次', limit:2, def:2},
+    {id:'petEgg', name:'開啟寵物蛋', point:60, unit:'次'}
+  ]},
+  {key:'thu', label:'週四', title:'週四｜寶箱積分', tasks:[
+    {id:'dailyDungeon', name:'任意副本', point:500, unit:'次', limit:22, def:22},
+    {id:'bronzeBox', name:'青銅寶箱', point:48, unit:'次'},
+    {id:'silverBox', name:'白銀寶箱', point:480, unit:'次'},
+    {id:'goldBox', name:'黃金寶箱', point:960, unit:'次'},
+    {id:'petBox', name:'寵物寶箱', point:2400, unit:'次'}
+  ], notes:[{title:'任意副本次數上限參考', headers:['類型','最多副本次數'], rows:[['無課(無廣告)','8'],['無課(看滿廣告)','16'],['月卡(無廣告)','10'],['月卡(看滿廣告)','18'],['終身卡(無廣告)','12'],['終身卡(看滿廣告)','20'],['月卡+終身卡(無廣告)','14'],['月卡+終身卡(看滿廣告)','22']]}]},
+  {key:'fri', label:'週五', title:'週五｜寶石寶箱', tasks:[
+    {id:'guruTicket', name:'消耗咕嚕票券', point:1500, unit:'次', limit:10},
+    {id:'gemDraw', name:'寶石抽獎', point:3000, unit:'次'}
+  ]},
+  {key:'sat', label:'週六', title:'週六｜坐騎養成', tasks:[
+    {id:'dungeonTicket', name:'消耗地牢挑戰券', point:3750, unit:'次', limit:5, def:5},
+    {id:'horseshoe', name:'消耗蹄鐵升級坐騎', point:32, unit:'次'}
+  ]}
+];
+const sundayTasks = [];
+dayDefs.forEach(d=> d.tasks.forEach(t=> sundayTasks.push({...t, id:d.key+'_'+t.id, name:d.label+'｜'+t.name})));
+dayDefs.push({key:'sun', label:'週日', title:'週日｜拉力衝刺（週一～週六任務全開）', tasks:sundayTasks});
+let activeKey = 'mon';
+const state = {};
+dayDefs.forEach(day => { state[day.key] = {}; day.tasks.forEach(t => state[day.key][t.id] = Number(t.def || 0)); });
+const $ = (id) => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const clampNum = v => { const n = Math.floor(Number(v)); return Number.isFinite(n) && n > 0 ? n : 0; };
+function dayByKey(key){ return dayDefs.find(d=>d.key===key); }
+function calcDay(key){
+  const day = dayByKey(key); let score = 0; let warnings = [];
+  day.tasks.forEach(t=>{ const val = clampNum(state[key][t.id]); score += val * t.point; if(t.limit != null && val > t.limit) warnings.push(`${t.name} 超過上限 ${t.limit} 次`); });
+  let stars = 0; STAGES.forEach(s=>{ if(score >= s.score) stars += s.stars; });
+  return {score, need: Math.max(0, TARGET-score), stars: Math.min(6, stars), warnings};
+}
+function makeTable(note){
+  let html = `<div class="note"><h3>${note.title}</h3><div class="table-scroll"><table><thead><tr>${note.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+  note.rows.forEach(r => html += `<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`);
+  html += `</tbody></table></div></div>`; return html;
+}
+function render(){
+  $('tabs').innerHTML = dayDefs.map(d=>`<button class="tab ${d.key===activeKey?'active':''}" data-tab="${d.key}" type="button">${d.label}</button>`).join('');
+  $('panels').innerHTML = dayDefs.map(day=>{
+    let tasks = day.tasks.map(t=>{
+      const limit = t.limit != null ? `｜上限 ${t.limit} ${t.unit}` : '｜無上限';
+      return `<div class="task"><div><div class="task-name">${t.name}</div><div class="task-meta">${fmt(t.point)} 分 / ${t.unit} ${limit}</div><div class="warn" id="warn-${day.key}-${t.id}"></div></div><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-day="${day.key}" data-task="${t.id}" value="${state[day.key][t.id] || ''}" placeholder="0" /></div>`;
+    }).join('');
+    let notes = (day.notes || []).map(makeTable).join('');
+    return `<section class="card day-panel ${day.key===activeKey?'active':''}" id="panel-${day.key}"><div class="day-title"><h2>${day.title}</h2><span class="mini">只顯示當日任務</span></div><div class="task-list">${tasks}</div><div class="day-total"><div class="pill"><span class="label">當日積分</span><strong id="score-${day.key}">0</strong></div><div class="pill"><span class="label">距離目標</span><strong id="need-${day.key}">0</strong></div><div class="pill"><span class="label">星星</span><strong id="stars-${day.key}">0 / 6</strong></div><div class="pill"><span class="label">狀態</span><strong id="status-${day.key}">未達成</strong></div></div><div class="recommend" id="rec-${day.key}"></div>${notes}</section>`;
+  }).join('');
+  bindEvents(); updateAll();
+}
+function bindEvents(){
+  document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{activeKey=btn.dataset.tab; showActive(); updateAll();}));
+  document.querySelectorAll('input[data-day]').forEach(inp=>inp.addEventListener('input',()=>{ state[inp.dataset.day][inp.dataset.task] = clampNum(inp.value); updateAll(); }));
+}
+function showActive(){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===activeKey));
+  document.querySelectorAll('.day-panel').forEach(p=>p.classList.toggle('active', p.id === 'panel-'+activeKey));
+}
+function updateAll(){
+  let weekScore = 0, rawStars = 0;
+  dayDefs.forEach(day=>{
+    let c = calcDay(day.key); weekScore += c.score; rawStars += c.stars;
+    const s=$('score-'+day.key), n=$('need-'+day.key), st=$('stars-'+day.key), status=$('status-'+day.key), rec=$('rec-'+day.key);
+    if(s){s.textContent=fmt(c.score); n.textContent=fmt(c.need); st.textContent=`${c.stars} / 6`; status.textContent=c.score>=TARGET?'已達成':'未達成'; status.style.color=c.score>=TARGET?'var(--green)':'var(--text)'; rec.innerHTML = recommendation(day.key, c);}
+    day.tasks.forEach(t=>{ const w=$(`warn-${day.key}-${t.id}`); if(w){ const val=clampNum(state[day.key][t.id]); if(t.limit!=null && val>t.limit){w.style.display='block'; w.textContent=`已超過每日上限：${t.limit} ${t.unit}`;} else {w.style.display='none'; w.textContent='';}} });
+  });
+  const today = calcDay(activeKey);
+  $('todayScore').textContent = fmt(today.score); $('todayNeed').textContent = fmt(today.need); $('todayStars').textContent = today.stars;
+  $('progressBar').style.width = Math.min(100, today.score/TARGET*100).toFixed(2)+'%';
+  updateStages(today.score);
+  const capped = Math.min(30, rawStars);
+  $('weekScore').textContent = fmt(weekScore); $('weekStars').textContent = capped; $('weekNeedStars').textContent = Math.max(0, 30-capped); $('weeklyPrize').textContent = capped>=30?'已達成':'未達成'; $('weeklyPrize').style.color=capped>=30?'var(--green)':'var(--text)';
+  updateWeekTable();
+}
+function updateStages(score){
+  $('stages').innerHTML = STAGES.map((s,i)=>`<div class="stage ${score>=s.score?'done':''}"><div class="t">階段 ${i+1}</div><div class="v">${fmt(s.score)}</div><div class="t">星星 +${s.stars}</div></div>`).join('');
+}
+function updateWeekTable(){
+  let html = '<thead><tr><th>日期</th><th>積分</th><th>缺口</th><th>星星</th><th>狀態</th></tr></thead><tbody>';
+  dayDefs.forEach(day=>{ const c=calcDay(day.key); html += `<tr><td>${day.label}</td><td>${fmt(c.score)}</td><td>${fmt(c.need)}</td><td>${c.stars}/6</td><td>${c.score>=TARGET?'已達成':'未達成'}</td></tr>`; });
+  html += '</tbody>'; $('weekTable').innerHTML = html;
+}
+function recommendation(key, c){
+  const day = dayByKey(key); if(c.need<=0) return '已達成 245,000 分。';
+  const options = day.tasks.filter(t=> t.limit == null || clampNum(state[key][t.id]) < t.limit).map(t=>{
+    let remaining = t.limit == null ? Infinity : t.limit - clampNum(state[key][t.id]);
+    let needCount = Math.ceil(c.need / t.point); let usable = Math.min(needCount, remaining);
+    return {t, needCount, usable, enough: usable>=needCount};
+  }).sort((a,b)=>b.t.point-a.t.point);
+  if(!options.length) return '所有有限次數任務都已達上限，且沒有可補分任務。';
+  const best = options[0];
+  if(best.enough) return `補滿建議：再做「${best.t.name}」${fmt(best.needCount)} ${best.t.unit}，可達到或超過 245,000 分。`;
+  return `補滿建議：先做高分任務「${best.t.name}」${fmt(best.usable)} ${best.t.unit}，剩餘缺口再用其他任務補足。`;
+}
+function autoFill(mode){
+  const key=activeKey, day=dayByKey(key); clearDay(false);
+  let remaining = TARGET;
+  let tasks = [...day.tasks];
+  if(mode==='limited'){
+    tasks.filter(t=>t.limit!=null).forEach(t=>{ const count=t.limit; state[key][t.id]=count; remaining -= count*t.point; });
+    tasks = tasks.filter(t=>t.limit==null).sort((a,b)=>b.point-a.point);
+  } else {
+    tasks.sort((a,b)=>b.point-a.point);
+  }
+  for(const t of tasks){
+    if(remaining<=0) break;
+    const cur = clampNum(state[key][t.id]);
+    const maxAdd = t.limit==null ? Infinity : Math.max(0, t.limit-cur);
+    const add = Math.min(Math.ceil(remaining/t.point), maxAdd);
+    if(add>0 && Number.isFinite(add)){ state[key][t.id] = cur + add; remaining -= add*t.point; }
+  }
+  syncInputs(key); updateAll();
+}
+function clearDay(doUpdate=true){ const key=activeKey; Object.keys(state[key]).forEach(id=>state[key][id]=0); syncInputs(key); if(doUpdate) updateAll(); }
+function syncInputs(key){ document.querySelectorAll(`input[data-day="${key}"]`).forEach(inp=>{ const v=state[key][inp.dataset.task] || 0; inp.value = v ? String(v) : ''; }); }
+function clearAll(){ Object.keys(state).forEach(k=>Object.keys(state[k]).forEach(id=>state[k][id]=0)); document.querySelectorAll('input[data-day]').forEach(i=>i.value=''); updateAll(); }
+$('autoMinBtn').addEventListener('click',()=>autoFill('min'));
+$('autoLimitedBtn').addEventListener('click',()=>autoFill('limited'));
+$('clearDayBtn').addEventListener('click',()=>clearDay(true));
+$('clearAllBtn').addEventListener('click',clearAll);
+render();
+window.__missionCalcTest = {dayDefs,state,calcDay,setActive:(k)=>{activeKey=k;showActive();updateAll();},autoFill,clearDay,clearAll};
+})();
+</script>
+</body>
+</html>
