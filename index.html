@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>水豚馬拉松 每週任務互動計算機 v4</title>
+<title>水豚馬拉松 每週任務互動計算機 v5</title>
 <style>
   :root{
     --bg:#f6f8fb; --card:#fff; --text:#172033; --muted:#667085; --line:#e5e7eb;
@@ -64,7 +64,7 @@
   .stage .t{font-size:12px;color:var(--muted)} .stage .v{font-size:16px;font-weight:850;margin-top:4px;}
   .week-table{min-width:680px;}
   @media (min-width:720px){
-    body{padding:24px}.summary-grid{grid-template-columns:1.2fr 1fr 1fr}.stat.full{grid-column:auto}.btn-row{grid-template-columns:repeat(4,1fr)}.task{grid-template-columns:1fr 140px}.day-total{grid-template-columns:repeat(4,1fr)}
+    body{padding:24px}.summary-grid{grid-template-columns:1.2fr 1fr 1fr}.stat.full{grid-column:auto}.btn-row{grid-template-columns:repeat(5,1fr)}.task{grid-template-columns:1fr 140px}.day-total{grid-template-columns:repeat(4,1fr)}
   }
 </style>
 </head>
@@ -85,6 +85,7 @@
     <div class="btn-row">
       <button class="primary" id="autoMinBtn">自動補足：最少操作次數</button>
       <button class="warning" id="autoLimitedBtn">自動補足：先做有限次數任務</button>
+      <button class="secondary" id="restoreDefaultBtn">回復預設值</button>
       <button class="secondary" id="clearDayBtn">清除本日</button>
       <button class="secondary" id="clearAllBtn">清除全部</button>
     </div>
@@ -248,14 +249,21 @@ function autoFill(mode){
   syncInputs(key); updateAll();
 }
 function clearDay(doUpdate=true){ const key=activeKey; Object.keys(state[key]).forEach(id=>state[key][id]=0); syncInputs(key); if(doUpdate) updateAll(); }
+function restoreDefaultDay(doUpdate=true){
+  const key=activeKey, day=dayByKey(key);
+  day.tasks.forEach(t=>{ state[key][t.id] = Number(t.def || 0); });
+  syncInputs(key);
+  if(doUpdate) updateAll();
+}
 function syncInputs(key){ document.querySelectorAll(`input[data-day="${key}"]`).forEach(inp=>{ const v=state[key][inp.dataset.task] || 0; inp.value = v ? String(v) : ''; }); }
 function clearAll(){ Object.keys(state).forEach(k=>Object.keys(state[k]).forEach(id=>state[k][id]=0)); document.querySelectorAll('input[data-day]').forEach(i=>i.value=''); updateAll(); }
 $('autoMinBtn').addEventListener('click',()=>autoFill('min'));
 $('autoLimitedBtn').addEventListener('click',()=>autoFill('limited'));
+$('restoreDefaultBtn').addEventListener('click',()=>restoreDefaultDay(true));
 $('clearDayBtn').addEventListener('click',()=>clearDay(true));
 $('clearAllBtn').addEventListener('click',clearAll);
 render();
-window.__missionCalcTest = {dayDefs,state,calcDay,setActive:(k)=>{activeKey=k;showActive();updateAll();},autoFill,clearDay,clearAll};
+window.__missionCalcTest = {dayDefs,state,calcDay,setActive:(k)=>{activeKey=k;showActive();updateAll();},autoFill,clearDay,restoreDefaultDay,clearAll};
 })();
 </script>
 </body>
