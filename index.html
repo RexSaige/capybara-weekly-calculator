@@ -3,429 +3,182 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>水豚馬拉松 每週任務互動計算機 v7</title>
+<title>水豚馬拉松 每週任務互動計算機 v11</title>
 <style>
-  :root{
-    --bg:#f6f8fb; --card:#fff; --text:#172033; --muted:#667085; --line:#e5e7eb;
-    --blue:#2563eb; --blue2:#dbeafe; --orange:#f59e0b; --green:#16a34a; --red:#dc2626;
-    --shadow:0 10px 25px rgba(15,23,42,.08); --radius:20px;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Microsoft JhengHei",Arial,sans-serif;}
-  body{padding:18px 14px 34px;}
-  .wrap{max-width:980px;margin:0 auto;}
-  header{padding:8px 2px 16px;display:flex;gap:12px;align-items:flex-start;justify-content:space-between;}
-  .header-main{min-width:0;}
-  .top-action{flex:0 0 auto;margin-top:4px;}
-  .top-action button{padding:12px 14px;border-radius:14px;font-size:15px;white-space:nowrap;}
-  h1{font-size:28px;line-height:1.2;margin:0 0 10px;font-weight:850;letter-spacing:-.5px;}
-  .desc{color:var(--muted);font-size:16px;line-height:1.65;margin:0;}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin:14px 0;}
-  .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-  .stat{border:1px solid var(--line);border-radius:18px;padding:14px;background:#fff;}
-  .stat.full{grid-column:1 / -1;}
-  .label{font-size:14px;color:var(--muted);margin-bottom:6px;}
-  .num{font-size:30px;line-height:1;font-weight:850;letter-spacing:-.5px;}
-  .progress{height:18px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:16px 0 12px;}
-  .bar{height:100%;width:0%;background:linear-gradient(90deg,#60a5fa,#2563eb);border-radius:999px;transition:width .18s ease;}
-  .btn-row{display:grid;gap:10px;margin-top:12px;}
-  button{border:0;border-radius:16px;padding:15px 14px;font-size:16px;font-weight:800;cursor:pointer;touch-action:manipulation;}
-  .primary{background:var(--blue);color:white;}
-  .warning{background:var(--orange);color:#111827;}
-  .success{background:var(--green);color:white;}
-  .secondary{background:#e5e7eb;color:#111827;}
-  .tab-wrap{position:sticky;top:0;z-index:10;background:rgba(246,248,251,.96);backdrop-filter:blur(8px);padding:8px 0 10px;margin:2px -14px 8px;border-bottom:1px solid #eef0f3;}
-  .tabs{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:2px 14px 8px;scrollbar-width:auto;-webkit-overflow-scrolling:touch;}
-  .tabs::-webkit-scrollbar{height:8px}.tabs::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}.tabs::-webkit-scrollbar-track{background:#e5e7eb;border-radius:999px}
-  .tab{min-width:92px;white-space:nowrap;border:1px solid var(--line);background:#fff;color:#334155;padding:12px 14px;border-radius:999px;box-shadow:none;}
-  .tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
-  .day-panel{display:none;}
-  .day-panel.active{display:block;}
-  .day-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:14px;}
-  h2{font-size:24px;margin:0;font-weight:850;}
-  .mini{font-size:13px;color:var(--muted);}
-  .task-list{display:grid;gap:10px;}
-  .task{display:grid;grid-template-columns:1fr 112px;gap:10px;align-items:center;border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;}
-  .task-name{font-size:16px;font-weight:800;margin-bottom:4px;}
-  .task-meta{font-size:13px;color:var(--muted);line-height:1.35;}
-  .task-conv{display:inline-block;margin-top:5px;padding:3px 8px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:850;}
-  input[type="number"]{width:100%;font-size:20px;font-weight:800;text-align:center;padding:12px 8px;border:1.5px solid #cbd5e1;border-radius:14px;background:#fff;color:var(--text);}
-  input[type="number"]:focus{outline:3px solid #bfdbfe;border-color:#2563eb;}
-  .day-total{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 0;}
-  .pill{border-radius:16px;padding:12px;background:#f8fafc;border:1px solid var(--line);}
-  .pill strong{display:block;font-size:20px;margin-top:4px;}
-  .warn{color:var(--red);font-weight:800;font-size:13px;margin-top:6px;display:none;}
-  .recommend{font-size:14px;line-height:1.55;color:#344054;background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:12px;}
-  .note{margin-top:14px;border-top:1px dashed #cbd5e1;padding-top:14px;}
-  .note h3{font-size:17px;margin:0 0 8px;}
-  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:#fff;}
-  table{border-collapse:collapse;width:100%;min-width:360px;font-size:14px;}
-  th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;}
-  th{background:#f1f5f9;color:#334155;font-weight:850;}
-  tr:last-child td{border-bottom:0;}
-  .stage-grid{display:grid;grid-template-columns:repeat(5,minmax(92px,1fr));gap:8px;overflow-x:auto;padding-bottom:4px;}
-  .stage{border:1px solid var(--line);border-radius:14px;padding:10px;background:#f8fafc;min-width:92px;}
-  .stage.done{background:#ecfdf5;border-color:#86efac;}
-  .stage .t{font-size:12px;color:var(--muted)} .stage .v{font-size:16px;font-weight:850;margin-top:4px;}
-  .stage .rewards{font-size:12px;line-height:1.45;margin-top:7px;color:#334155;}
-  .week-table{min-width:680px;}
-  @media (min-width:720px){
-    body{padding:24px}.summary-grid{grid-template-columns:1.2fr 1fr 1fr}.stat.full{grid-column:auto}.btn-row{grid-template-columns:repeat(6,1fr)}.task{grid-template-columns:1fr 140px}.day-total{grid-template-columns:repeat(4,1fr)}
-  }
-  @media (max-width:520px){header{display:block}.top-action{margin-top:12px}.top-action button{width:100%;}.btn-row{grid-template-columns:1fr;}}
+:root{--bg:#f6f8fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e5e7eb;--blue:#2563eb;--blue2:#dbeafe;--orange:#f59e0b;--green:#16a34a;--red:#dc2626;--purple:#7c3aed;--shadow:0 10px 25px rgba(15,23,42,.08);--radius:20px}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Microsoft JhengHei",Arial,sans-serif}body{padding:18px 14px 34px}.wrap{max-width:980px;margin:0 auto}.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:8px 2px 16px}h1{font-size:28px;line-height:1.2;margin:0 0 10px;font-weight:850;letter-spacing:-.5px}.desc{color:var(--muted);font-size:16px;line-height:1.65;margin:0}.top-actions{display:flex;gap:8px;flex-shrink:0}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin:14px 0}.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{border:1px solid var(--line);border-radius:18px;padding:14px;background:#fff}.stat.full{grid-column:1/-1}.label{font-size:14px;color:var(--muted);margin-bottom:6px}.num{font-size:30px;line-height:1;font-weight:850;letter-spacing:-.5px}.progress{height:18px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:16px 0 12px}.bar{height:100%;width:0%;background:linear-gradient(90deg,#60a5fa,#2563eb);border-radius:999px;transition:width .18s ease}.btn-row{display:grid;gap:10px;margin-top:12px}button{border:0;border-radius:16px;padding:15px 14px;font-size:16px;font-weight:800;cursor:pointer;touch-action:manipulation}.primary{background:var(--blue);color:white}.purple{background:var(--purple);color:white}.warning{background:var(--orange);color:#111827}.secondary{background:#e5e7eb;color:#111827}.tab-wrap{position:sticky;top:0;z-index:10;background:rgba(246,248,251,.96);backdrop-filter:blur(8px);padding:8px 0 10px;margin:2px -14px 8px;border-bottom:1px solid #eef0f3}.tabs{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:2px 14px 8px;scrollbar-width:auto;-webkit-overflow-scrolling:touch}.tabs::-webkit-scrollbar{height:8px}.tabs::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}.tabs::-webkit-scrollbar-track{background:#e5e7eb;border-radius:999px}.tab{min-width:92px;white-space:nowrap;border:1px solid var(--line);background:#fff;color:#334155;padding:12px 14px;border-radius:999px;box-shadow:none}.tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}.day-panel{display:none}.day-panel.active{display:block}.day-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:14px}h2{font-size:24px;margin:0;font-weight:850}.mini{font-size:13px;color:var(--muted)}.task-list{display:grid;gap:10px}.task{display:grid;grid-template-columns:1fr 112px;gap:10px;align-items:center;border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff}.task-name{font-size:16px;font-weight:800;margin-bottom:4px}.task-meta{font-size:13px;color:var(--muted);line-height:1.35}.task-step{font-size:13px;color:#1d4ed8;line-height:1.35;font-weight:800;margin-top:2px}input[type="number"]{width:100%;font-size:20px;font-weight:800;text-align:center;padding:12px 8px;border:1.5px solid #cbd5e1;border-radius:14px;background:#fff;color:var(--text)}input[type="number"]:focus{outline:3px solid #bfdbfe;border-color:#2563eb}.day-total{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 0}.pill{border-radius:16px;padding:12px;background:#f8fafc;border:1px solid var(--line)}.pill strong{display:block;font-size:20px;margin-top:4px}.warn{color:var(--red);font-weight:800;font-size:13px;margin-top:6px;display:none}.recommend{font-size:14px;line-height:1.55;color:#344054;background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:12px}.note{margin-top:14px;border-top:1px dashed #cbd5e1;padding-top:14px}.note h3{font-size:17px;margin:0 0 8px}.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:#fff}table{border-collapse:collapse;width:100%;min-width:360px;font-size:14px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{background:#f1f5f9;color:#334155;font-weight:850}tr:last-child td{border-bottom:0}.stage-grid{display:grid;grid-template-columns:repeat(5,minmax(180px,1fr));gap:8px;overflow-x:auto;padding-bottom:4px}.stage{border:1px solid var(--line);border-radius:14px;padding:10px;background:#f8fafc;min-width:180px}.stage.done{background:#ecfdf5;border-color:#86efac}.stage .t{font-size:12px;color:var(--muted)}.stage .v{font-size:16px;font-weight:850;margin-top:4px}.stage .r{font-size:13px;line-height:1.45;margin-top:6px;color:#344054}.week-table{min-width:680px}.weekly-rewards{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:8px;overflow-x:auto;margin-top:12px}.weekly-reward{border:1px solid var(--line);border-radius:14px;padding:10px;background:#f8fafc;min-width:180px}.weekly-reward.done{background:#ecfdf5;border-color:#86efac}.weekly-reward .t{font-size:13px;color:var(--muted)}.weekly-reward .v{font-size:16px;font-weight:850;margin-top:3px}.weekly-reward .r{font-size:13px;line-height:1.45;margin-top:6px}.sr-only{position:absolute;left:-9999px}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111827;color:white;border-radius:999px;padding:10px 14px;font-size:14px;z-index:99;display:none}
+@media (min-width:720px){body{padding:24px}.summary-grid{grid-template-columns:1.2fr 1fr 1fr}.stat.full{grid-column:auto}.btn-row{grid-template-columns:1.2fr repeat(5,1fr)}.task{grid-template-columns:1fr 140px}.day-total{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:540px){.topbar{display:block}.top-actions{margin-top:10px}.top-actions button{width:100%}h1{font-size:26px}.stage-grid{grid-template-columns:repeat(5,minmax(190px,1fr))}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="header-main">
-      <h1>水豚馬拉松 每週任務互動計算機</h1>
-      <p class="desc">每日目標 245,000 分拿滿 6 顆星；每週星星獎勵上限 30 顆。填入各任務完成次數後會即時計算分數、缺口、階段獎勵與補滿建議。</p>
-    </div>
-    <div class="top-action">
-      <button class="primary" id="recordBtn" type="button">紀錄本次設置</button>
-    </div>
+  <header class="topbar">
+    <div><h1>水豚馬拉松 每週任務互動計算機</h1><p class="desc">每日目標 245,000 分拿滿 6 顆星；每週星星獎勵上限 30 顆。填入各任務完成次數後會即時計算分數、缺口、階段獎勵與補滿建議。</p></div>
+    <div class="top-actions"><button class="primary" id="recordBtn" type="button">確認並產出圖表</button></div>
   </header>
-
   <section class="card">
-    <div class="summary-grid">
-      <div class="stat full"><div class="label">本日積分</div><div class="num" id="todayScore">0</div></div>
-      <div class="stat"><div class="label">距離 245,000</div><div class="num" id="todayNeed">245,000</div></div>
-      <div class="stat"><div class="label">本日星星</div><div class="num"><span id="todayStars">0</span> / 6</div></div>
-    </div>
+    <div class="summary-grid"><div class="stat full"><div class="label">本日積分</div><div class="num" id="todayScore">0</div></div><div class="stat"><div class="label">距離 245,000</div><div class="num" id="todayNeed">245,000</div></div><div class="stat"><div class="label">本日星星</div><div class="num"><span id="todayStars">0</span> / 6</div></div></div>
     <div class="progress"><div class="bar" id="progressBar"></div></div>
-    <div class="btn-row">
-      <button class="success" id="freePlanBtn">無課推薦最省做法</button>
-      <button class="primary" id="autoMinBtn">自動補足：最少操作次數</button>
-      <button class="warning" id="autoLimitedBtn">自動補足：先做有限次數任務</button>
-      <button class="secondary" id="restoreDefaultBtn">回復預設值</button>
-      <button class="secondary" id="clearDayBtn">清除本日</button>
-      <button class="secondary" id="clearAllBtn">清除全部</button>
-    </div>
+    <div class="btn-row"><button class="purple" id="freeRecommendBtn" type="button">無課推薦最省做法</button><button class="primary" id="autoMinBtn" type="button">自動補足：最少操作次數</button><button class="warning" id="autoLimitedBtn" type="button">自動補足：先做有限次數任務</button><button class="secondary" id="restoreDefaultBtn" type="button">回復預設值</button><button class="secondary" id="clearDayBtn" type="button">清除本日</button><button class="secondary" id="clearAllBtn" type="button">清除全部</button></div>
   </section>
-
-  <div class="tab-wrap">
-    <div class="tabs" id="tabs" aria-label="週一到週日頁籤"></div>
-  </div>
-
+  <div class="tab-wrap"><div class="tabs" id="tabs" aria-label="週一到週日頁籤"></div></div>
   <main id="panels"></main>
-
-  <section class="card">
-    <h2>本日階段獎勵</h2>
-    <div class="stage-grid" id="stages"></div>
-  </section>
-
-  <section class="card">
-    <h2>每週統計</h2>
-    <div class="day-total" style="margin-bottom:12px;">
-      <div class="pill"><span class="label">本週總積分</span><strong id="weekScore">0</strong></div>
-      <div class="pill"><span class="label">本週星星</span><strong><span id="weekStars">0</span> / 30</strong></div>
-      <div class="pill"><span class="label">每週大獎</span><strong id="weeklyPrize">未達成</strong></div>
-      <div class="pill"><span class="label">距離 30 星</span><strong id="weekNeedStars">30</strong></div>
-    </div>
-    <div class="table-scroll"><table class="week-table" id="weekTable"></table></div>
-  </section>
+  <section class="card"><h2>本日階段獎勵</h2><div class="stage-grid" id="stages"></div></section>
+  <section class="card"><h2>每週統計</h2><div class="day-total" style="margin-bottom:12px;"><div class="pill"><span class="label">本週總積分</span><strong id="weekScore">0</strong></div><div class="pill"><span class="label">本週星星</span><strong><span id="weekStars">0</span> / 30</strong></div><div class="pill"><span class="label">每週大獎</span><strong id="weeklyPrize">未達成</strong></div><div class="pill"><span class="label">距離 30 星</span><strong id="weekNeedStars">30</strong></div></div><div class="table-scroll"><table class="week-table" id="weekTable"></table></div><div class="weekly-rewards" id="weeklyRewards"></div></section>
 </div>
-
+<div class="toast" id="toast"></div>
 <script>
 (function(){
 'use strict';
-const TARGET = 245000;
-const STAGES = [
-  {score:5600, stars:1, rewards:{'神威錘':100,'傳說鑰匙':1}},
-  {score:18750, stars:1, rewards:{'卡皮機銀幣':1,'神威錘':100,'傳說鑰匙':1}},
-  {score:48750, stars:1, rewards:{'卡皮機銀幣':1,'神威錘':200,'傳說鑰匙':1}},
-  {score:116000, stars:1, rewards:{'暗月銀券':1,'神威錘':200,'傳說鑰匙':2}},
-  {score:245000, stars:2, rewards:{'暗月銀券':1,'神威錘':500,'傳說鑰匙':5}}
-];
-const dayDefs = [
-  {key:'mon', label:'週一', title:'週一｜裝備寶箱', tasks:[
-    {id:'stamina', name:'消耗體力', point:75, unit:'體力', step:5},
-    {id:'equipBox', name:'指定裝備寶箱', point:3000, unit:'次'},
-    {id:'heroSupply', name:'英雄補給寶箱', point:300, unit:'次', def:1},
-    {id:'adventurerSupply', name:'冒險者補給寶箱', point:100, unit:'次', def:4}
-  ], notes:[{title:'體力消耗詳細資訊', headers:['遊歷倍率','遊歷1次'], rows:[['x1(5)','375'],['x3(15)','1,125'],['x5(25)','1,875'],['x10(50)','3,750'],['x20(100)','7,500'],['x50(250)','18,750']]},{title:'困難副本體力資訊', headers:['困難倍率','困難一次'], rows:[['x1(15)','1,125'],['x2(30)','2,250'],['x3(45)','3,375'],['x20(300)','22,500']]}]},
-  {key:'tue', label:'週二', title:'週二｜寵物養成', tasks:[
-    {id:'goblinMiner', name:'哥布林礦工', point:40, unit:'次', limit:200},
-    {id:'spiritStone', name:'消耗靈石', point:15, unit:'顆', step:200}
-  ]},
-  {key:'wed', label:'週三', title:'週三｜寵物蛋', tasks:[
-    {id:'guildRaid', name:'公會討伐', point:3750, unit:'次', limit:2, def:2},
-    {id:'petEgg', name:'開啟寵物蛋', point:60, unit:'次', step:35, stepUnit:'個'}
-  ]},
-  {key:'thu', label:'週四', title:'週四｜寶箱積分', tasks:[
-    {id:'dailyDungeon', name:'任意副本', point:500, unit:'次', limit:22, def:22},
-    {id:'bronzeBox', name:'青銅寶箱', point:48, unit:'次'},
-    {id:'silverBox', name:'白銀寶箱', point:480, unit:'次'},
-    {id:'goldBox', name:'黃金寶箱', point:960, unit:'次'},
-    {id:'petBox', name:'寵物寶箱', point:2400, unit:'次'}
-  ], notes:[{title:'任意副本次數上限參考', headers:['類型','最多副本次數'], rows:[['無課(無廣告)','8'],['無課(看滿廣告)','16'],['月卡(無廣告)','10'],['月卡(看滿廣告)','18'],['終身卡(無廣告)','12'],['終身卡(看滿廣告)','20'],['月卡+終身卡(無廣告)','14'],['月卡+終身卡(看滿廣告)','22']]}]},
-  {key:'fri', label:'週五', title:'週五｜寶石寶箱', tasks:[
-    {id:'guruTicket', name:'消耗咕嚕票券', point:1500, unit:'次', limit:10},
-    {id:'gemDraw', name:'珍寶商店抽寶石', point:3000, unit:'次'}
-  ]},
-  {key:'sat', label:'週六', title:'週六｜坐騎養成', tasks:[
-    {id:'dungeonTicket', name:'消耗地牢挑戰券', point:3750, unit:'次', limit:5, def:5},
-    {id:'horseshoe', name:'消耗蹄鐵升級坐騎', point:32, unit:'次'}
-  ]},
-  {key:'sun', label:'週日', title:'週日｜拉力衝刺', tasks:[
-    {id:'arena', name:'挑戰競技場', point:750, unit:'次'},
-    {id:'equipBox', name:'指定裝備寶箱', point:3000, unit:'次'},
-    {id:'heroSupply', name:'英雄補給寶箱', point:300, unit:'次', def:1},
-    {id:'adventurerSupply', name:'冒險者補給寶箱', point:100, unit:'次', def:4},
-    {id:'horseshoe', name:'消耗蹄鐵升級坐騎', point:32, unit:'次'},
-    {id:'petEgg', name:'開啟寵物蛋', point:60, unit:'次', step:35, stepUnit:'個'},
-    {id:'bronzeBox', name:'青銅寶箱', point:48, unit:'次'},
-    {id:'silverBox', name:'白銀寶箱', point:480, unit:'次'},
-    {id:'goldBox', name:'黃金寶箱', point:960, unit:'次'},
-    {id:'petBox', name:'寵物寶箱', point:2400, unit:'次'},
-    {id:'gemDraw', name:'珍寶商店抽寶石', point:3000, unit:'次'},
-    {id:'spiritStone', name:'消耗靈石', point:15, unit:'顆', step:200}
-  ]}
-];
-let activeKey = 'mon';
-const state = {};
-dayDefs.forEach(day => { state[day.key] = {}; day.tasks.forEach(t => state[day.key][t.id] = Number(t.def || 0)); });
-const $ = (id) => document.getElementById(id);
-const fmt = n => Math.round(n).toLocaleString('en-US');
-const clampNum = v => { const n = Math.floor(Number(v)); return Number.isFinite(n) && n > 0 ? n : 0; };
-function dayByKey(key){ return dayDefs.find(d=>d.key===key); }
-function calcDay(key){
-  const day = dayByKey(key); let score = 0; let warnings = [];
-  day.tasks.forEach(t=>{ const val = clampNum(state[key][t.id]); score += val * t.point; if(t.limit != null && val > t.limit) warnings.push(`${t.name} 超過上限 ${t.limit} 次`); });
-  let stars = 0; STAGES.forEach(s=>{ if(score >= s.score) stars += s.stars; });
-  return {score, need: Math.max(0, TARGET-score), stars: Math.min(6, stars), warnings};
-}
-function makeTable(note){
-  let html = `<div class="note"><h3>${note.title}</h3><div class="table-scroll"><table><thead><tr>${note.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
-  note.rows.forEach(r => html += `<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`);
-  html += `</tbody></table></div></div>`; return html;
-}
-function render(){
-  $('tabs').innerHTML = dayDefs.map(d=>`<button class="tab ${d.key===activeKey?'active':''}" data-tab="${d.key}" type="button">${d.label}</button>`).join('');
-  $('panels').innerHTML = dayDefs.map(day=>{
-    let tasks = day.tasks.map(t=>{
-      const limit = t.limit != null ? `｜上限 ${t.limit} ${t.unit}` : '｜無上限';
-      const conv = (t.step && t.step !== 1) ? `<div class="task-conv">${fmt(t.point * t.step)} 分 / ${fmt(t.step)} ${t.stepUnit || t.unit}</div>` : '';
-      return `<div class="task"><div><div class="task-name">${t.name}</div><div class="task-meta">${fmt(t.point)} 分 / ${t.unit} ${limit}${conv}</div><div class="warn" id="warn-${day.key}-${t.id}"></div></div><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-day="${day.key}" data-task="${t.id}" step="${t.step || 1}" value="${state[day.key][t.id] || ''}" placeholder="0" /></div>`;
-    }).join('');
-    let notes = (day.notes || []).map(makeTable).join('');
-    return `<section class="card day-panel ${day.key===activeKey?'active':''}" id="panel-${day.key}"><div class="day-title"><h2>${day.title}</h2><span class="mini">只顯示當日任務</span></div><div class="task-list">${tasks}</div><div class="day-total"><div class="pill"><span class="label">當日積分</span><strong id="score-${day.key}">0</strong></div><div class="pill"><span class="label">距離目標</span><strong id="need-${day.key}">0</strong></div><div class="pill"><span class="label">星星</span><strong id="stars-${day.key}">0 / 6</strong></div><div class="pill"><span class="label">狀態</span><strong id="status-${day.key}">未達成</strong></div></div><div class="recommend" id="rec-${day.key}"></div>${notes}</section>`;
-  }).join('');
-  bindEvents(); updateAll();
-}
-function bindEvents(){
-  document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{activeKey=btn.dataset.tab; showActive(); updateAll();}));
-  document.querySelectorAll('input[data-day]').forEach(inp=>inp.addEventListener('input',()=>{ state[inp.dataset.day][inp.dataset.task] = clampNum(inp.value); updateAll(); }));
-}
-function showActive(){
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===activeKey));
-  document.querySelectorAll('.day-panel').forEach(p=>p.classList.toggle('active', p.id === 'panel-'+activeKey));
-}
-function updateAll(){
-  let weekScore = 0, rawStars = 0;
-  dayDefs.forEach(day=>{
-    let c = calcDay(day.key); weekScore += c.score; rawStars += c.stars;
-    const s=$('score-'+day.key), n=$('need-'+day.key), st=$('stars-'+day.key), status=$('status-'+day.key), rec=$('rec-'+day.key);
-    if(s){s.textContent=fmt(c.score); n.textContent=fmt(c.need); st.textContent=`${c.stars} / 6`; status.textContent=c.score>=TARGET?'已達成':'未達成'; status.style.color=c.score>=TARGET?'var(--green)':'var(--text)'; rec.innerHTML = recommendation(day.key, c);}
-    day.tasks.forEach(t=>{ const w=$(`warn-${day.key}-${t.id}`); if(w){ const val=clampNum(state[day.key][t.id]); if(t.limit!=null && val>t.limit){w.style.display='block'; w.textContent=`已超過每日上限：${t.limit} ${t.unit}`;} else {w.style.display='none'; w.textContent='';}} });
-  });
-  const today = calcDay(activeKey);
-  $('todayScore').textContent = fmt(today.score); $('todayNeed').textContent = fmt(today.need); $('todayStars').textContent = today.stars;
-  $('progressBar').style.width = Math.min(100, today.score/TARGET*100).toFixed(2)+'%';
-  updateStages(today.score);
-  const capped = Math.min(30, rawStars);
-  $('weekScore').textContent = fmt(weekScore); $('weekStars').textContent = capped; $('weekNeedStars').textContent = Math.max(0, 30-capped); $('weeklyPrize').textContent = capped>=30?'已達成':'未達成'; $('weeklyPrize').style.color=capped>=30?'var(--green)':'var(--text)';
-  updateWeekTable();
-}
-function rewardTextForStage(stage){
-  const parts = [`星星 ×${stage.stars}`];
-  Object.entries(stage.rewards || {}).forEach(([name, qty]) => parts.push(`${name} ×${fmt(qty)}`));
-  return parts.join('、');
-}
-function achievedRewards(score){
-  const total = {};
-  STAGES.forEach(stage=>{
-    if(score >= stage.score){
-      total['星星'] = (total['星星'] || 0) + stage.stars;
-      Object.entries(stage.rewards || {}).forEach(([name, qty]) => total[name] = (total[name] || 0) + qty);
-    }
-  });
-  return total;
-}
-function rewardSummaryText(rewards){
-  const order = ['星星','神威錘','卡皮機銀幣','暗月銀券','傳說鑰匙'];
-  const parts = order.filter(k => rewards[k]).map(k => `${k}×${fmt(rewards[k])}`);
-  Object.keys(rewards).filter(k => !order.includes(k) && rewards[k]).forEach(k => parts.push(`${k}×${fmt(rewards[k])}`));
-  return parts.length ? parts.join('、') : '尚未達成階段獎勵';
-}
-function updateStages(score){
-  $('stages').innerHTML = STAGES.map((s,i)=>`<div class="stage ${score>=s.score?'done':''}"><div class="t">階段 ${i+1}</div><div class="v">${fmt(s.score)}</div><div class="rewards">${rewardTextForStage(s)}</div></div>`).join('');
-}
-function updateWeekTable(){
-  let html = '<thead><tr><th>日期</th><th>積分</th><th>缺口</th><th>星星</th><th>狀態</th></tr></thead><tbody>';
-  dayDefs.forEach(day=>{ const c=calcDay(day.key); html += `<tr><td>${day.label}</td><td>${fmt(c.score)}</td><td>${fmt(c.need)}</td><td>${c.stars}/6</td><td>${c.score>=TARGET?'已達成':'未達成'}</td></tr>`; });
-  html += '</tbody>'; $('weekTable').innerHTML = html;
-}
-function recommendation(key, c){
-  const day = dayByKey(key); if(c.need<=0) return '已達成 245,000 分。';
-  const options = day.tasks.filter(t=> t.limit == null || clampNum(state[key][t.id]) < t.limit).map(t=>{
-    let remaining = t.limit == null ? Infinity : t.limit - clampNum(state[key][t.id]);
-    let needCount = Math.ceil(c.need / t.point); let usable = Math.min(needCount, remaining);
-    return {t, needCount, usable, enough: usable>=needCount};
-  }).sort((a,b)=>b.t.point-a.t.point);
-  if(!options.length) return '所有有限次數任務都已達上限，且沒有可補分任務。';
-  const best = options[0];
-  if(best.enough) return `補滿建議：再做「${best.t.name}」${fmt(best.needCount)} ${best.t.unit}，可達到或超過 245,000 分。`;
-  return `補滿建議：先做高分任務「${best.t.name}」${fmt(best.usable)} ${best.t.unit}，剩餘缺口再用其他任務補足。`;
-}
-function autoFill(mode){
-  const key=activeKey, day=dayByKey(key); clearDay(false);
-  let remaining = TARGET;
-  let tasks = [...day.tasks];
-  if(mode==='limited'){
-    tasks.filter(t=>t.limit!=null).forEach(t=>{ const count=t.limit; state[key][t.id]=count; remaining -= count*t.point; });
-    tasks = tasks.filter(t=>t.limit==null).sort((a,b)=>b.point-a.point);
-  } else {
-    tasks.sort((a,b)=>b.point-a.point);
-  }
-  for(const t of tasks){
-    if(remaining<=0) break;
-    const cur = clampNum(state[key][t.id]);
-    const maxAdd = t.limit==null ? Infinity : Math.max(0, t.limit-cur);
-    const add = Math.min(Math.ceil(remaining/t.point), maxAdd);
-    if(add>0 && Number.isFinite(add)){ state[key][t.id] = cur + add; remaining -= add*t.point; }
-  }
-  syncInputs(key); updateAll();
-}
-function clearDay(doUpdate=true){ const key=activeKey; Object.keys(state[key]).forEach(id=>state[key][id]=0); syncInputs(key); if(doUpdate) updateAll(); }
-function restoreDefaultDay(doUpdate=true){
-  const key=activeKey, day=dayByKey(key);
-  day.tasks.forEach(t=>{ state[key][t.id] = Number(t.def || 0); });
-  syncInputs(key);
-  if(doUpdate) updateAll();
-}
-
-const FREE_PLAN = {
-  mon:{stamina:650, heroSupply:1, adventurerSupply:4},
-  tue:{goblinMiner:140, spiritStone:16000},
-  wed:{guildRaid:2, petEgg:3990},
-  thu:{dailyDungeon:22, bronzeBox:300, silverBox:50},
-  fri:{guruTicket:5, gemDraw:14},
-  sat:{dungeonTicket:5, horseshoe:938},
-  sun:{arena:5, heroSupply:1, adventurerSupply:4, spiritStone:9200, petEgg:1750}
+const TARGET=245000;
+const STAGES=[{score:5600,stars:1},{score:18750,stars:1},{score:48750,stars:1},{score:116000,stars:1},{score:245000,stars:2}];
+const DAILY_REWARDS={
+ mon:[['星星*1','神威錘*100','靈石*350'],['星星*1','卡皮機銀幣*1','神威錘*100','靈石*350'],['星星*1','卡皮機銀幣*1','神威錘*200','靈石*700'],['星星*1','暗月銀券*1','神威錘*200','靈石*700'],['星星*2','暗月銀券*1','神威錘*500','靈石*1750']],
+ tue:[['星星*1','神威錘*100','寵物蛋*70'],['星星*1','卡皮機銀幣*1','神威錘*100','寵物蛋*70'],['星星*1','卡皮機銀幣*1','神威錘*200','寵物蛋*140'],['星星*1','暗月銀券*1','神威錘*200','寵物蛋*140'],['星星*2','暗月銀券*1','神威錘*500','寵物蛋*350']],
+ wed:[['星星*1','神威錘*100','白銀寶箱*45'],['星星*1','卡皮機銀幣*1','神威錘*100','白銀寶箱*45'],['星星*1','卡皮機銀幣*1','神威錘*200','白銀寶箱*90'],['星星*1','暗月銀券*1','神威錘*200','白銀寶箱*90'],['星星*2','暗月銀券*1','神威錘*500','白銀寶箱*220']],
+ thu:[['星星*1','神威錘*100','寶石鑰匙*1'],['星星*1','卡皮機銀幣*1','神威錘*100','寶石鑰匙*1'],['星星*1','卡皮機銀幣*1','神威錘*200','寶石鑰匙*1'],['星星*1','暗月銀券*1','神威錘*200','寶石鑰匙*2'],['星星*2','暗月銀券*1','神威錘*500','寶石鑰匙*5']],
+ fri:[['星星*1','神威錘*100','金蹄鐵*210'],['星星*1','卡皮機銀幣*1','神威錘*100','金蹄鐵*210'],['星星*1','卡皮機銀幣*1','神威錘*200','金蹄鐵*350'],['星星*1','暗月銀券*1','神威錘*200','金蹄鐵*350'],['星星*2','暗月銀券*1','神威錘*500','金蹄鐵*875']],
+ sat:[['星星*1','神威錘*100','紫寶石*300'],['星星*1','卡皮機銀幣*1','神威錘*100','紫寶石*300'],['星星*1','卡皮機銀幣*1','神威錘*200','紫寶石*600'],['星星*1','暗月銀券*1','神威錘*200','紫寶石*600'],['星星*2','暗月銀券*1','神威錘*500','紫寶石*1500']],
+ sun:[['星星*1','神威錘*100','傳說鑰匙*1'],['星星*1','卡皮機銀幣*1','神威錘*100','傳說鑰匙*1'],['星星*1','卡皮機銀幣*1','神威錘*200','傳說鑰匙*1'],['星星*1','暗月銀券*1','神威錘*200','傳說鑰匙*2'],['星星*2','暗月銀券*1','神威錘*500','傳說鑰匙*5']]
 };
-function applyFreePlan(){
-  Object.keys(state).forEach(k=>Object.keys(state[k]).forEach(id=>state[k][id]=0));
-  Object.entries(FREE_PLAN).forEach(([dayKey, values])=>{
-    if(!state[dayKey]) return;
-    Object.entries(values).forEach(([taskId, value])=>{
-      if(Object.prototype.hasOwnProperty.call(state[dayKey], taskId)) state[dayKey][taskId] = value;
-    });
-  });
-  document.querySelectorAll('input[data-day]').forEach(inp=>{
-    const v = state[inp.dataset.day][inp.dataset.task] || 0;
-    inp.value = v ? String(v) : '';
-  });
-  updateAll();
+const WEEKLY_REWARDS=[{stars:6,label:'階段1',items:['紫寶石*500','神威錘*2000','暗月金券*2']},{stars:18,label:'階段2',items:['紫寶石*1000','神威錘*3000','暗月金券*3']},{stars:30,label:'階段3',items:['紫寶石*1500','神威錘*5000','暗月金券*5']}];
+const dayDefs=[
+ {key:'mon',label:'週一',title:'週一｜裝備寶箱',tasks:[{id:'stamina',name:'消耗體力',point:75,unit:'體力',step:5,costResource:'體力'},{id:'equipBox',name:'指定裝備寶箱',point:3000,unit:'次',costResource:'指定裝備寶箱'},{id:'heroSupply',name:'英雄補給寶箱',point:300,unit:'次',def:1,costResource:'英雄補給寶箱'},{id:'adventurerSupply',name:'冒險者補給寶箱',point:100,unit:'次',def:4,costResource:'冒險者補給寶箱'}],notes:[{title:'體力消耗詳細資訊',headers:['遊歷倍率','遊歷1次'],rows:[['x1(5)','375'],['x3(15)','1,125'],['x5(25)','1,875'],['x10(50)','3,750'],['x20(100)','7,500'],['x50(250)','18,750']]},{title:'困難副本體力資訊',headers:['困難倍率','困難一次'],rows:[['x1(15)','1,125'],['x2(30)','2,250'],['x3(45)','3,375'],['x20(300)','22,500']]}]},
+ {key:'tue',label:'週二',title:'週二｜寵物養成',tasks:[{id:'goblinMiner',name:'哥布林礦工',point:40,unit:'次',limit:200,costResource:'哥布林礦工次數'},{id:'spiritStone',name:'消耗靈石',point:15,unit:'顆',step:200,costResource:'靈石'}]},
+ {key:'wed',label:'週三',title:'週三｜寵物蛋',tasks:[{id:'guildRaid',name:'公會討伐',point:3750,unit:'次',limit:2,def:2,costResource:'公會討伐次數'},{id:'petEgg',name:'開啟寵物蛋',point:60,unit:'個',step:35,costResource:'寵物蛋'}]},
+ {key:'thu',label:'週四',title:'週四｜寶箱積分',tasks:[{id:'dailyDungeon',name:'任意副本',point:500,unit:'次',limit:22,def:22,costResource:'任意副本次數'},{id:'bronzeBox',name:'青銅寶箱',point:48,unit:'次',costResource:'青銅寶箱'},{id:'silverBox',name:'白銀寶箱',point:480,unit:'次',costResource:'白銀寶箱'},{id:'goldBox',name:'黃金寶箱',point:960,unit:'次',costResource:'黃金寶箱'},{id:'petBox',name:'寵物寶箱',point:2400,unit:'次',costResource:'寵物寶箱'}],notes:[{title:'任意副本次數上限參考',headers:['類型','最多副本次數'],rows:[['無課(無廣告)','8'],['無課(看滿廣告)','16'],['月卡(無廣告)','10'],['月卡(看滿廣告)','18'],['終身卡(無廣告)','12'],['終身卡(看滿廣告)','20'],['月卡+終身卡(無廣告)','14'],['月卡+終身卡(看滿廣告)','22']]}]},
+ {key:'fri',label:'週五',title:'週五｜寶石寶箱',tasks:[{id:'guruTicket',name:'消耗咕嚕票券',point:1500,unit:'次',limit:10,costResource:'咕嚕票券'},{id:'gemDraw',name:'寶石鑰匙',point:3000,unit:'次',costResource:'寶石鑰匙'}]},
+ {key:'sat',label:'週六',title:'週六｜坐騎養成',tasks:[{id:'dungeonTicket',name:'消耗地牢挑戰券',point:3750,unit:'次',limit:5,def:5,costResource:'地牢挑戰券'},{id:'horseshoe',name:'消耗蹄鐵升級坐騎',point:32,unit:'次',costResource:'金蹄鐵'}]},
+ {key:'sun',label:'週日',title:'週日｜拉力衝刺',tasks:[{id:'arena',name:'挑戰競技場',point:750,unit:'次',costResource:'競技場挑戰次數'},{id:'equipBox',name:'指定裝備寶箱',point:3000,unit:'次',costResource:'指定裝備寶箱'},{id:'heroSupply',name:'英雄補給寶箱',point:300,unit:'次',def:1,costResource:'英雄補給寶箱'},{id:'adventurerSupply',name:'冒險者補給寶箱',point:100,unit:'次',def:4,costResource:'冒險者補給寶箱'},{id:'horseshoe',name:'消耗蹄鐵升級坐騎',point:32,unit:'次',costResource:'金蹄鐵'},{id:'petEgg',name:'開啟寵物蛋',point:60,unit:'個',step:35,costResource:'寵物蛋'},{id:'bronzeBox',name:'青銅寶箱',point:48,unit:'次',costResource:'青銅寶箱'},{id:'silverBox',name:'白銀寶箱',point:480,unit:'次',costResource:'白銀寶箱'},{id:'goldBox',name:'黃金寶箱',point:960,unit:'次',costResource:'黃金寶箱'},{id:'petBox',name:'寵物寶箱',point:2400,unit:'次',costResource:'寵物寶箱'},{id:'gemDraw',name:'寶石鑰匙',point:3000,unit:'次',costResource:'寶石鑰匙'},{id:'spiritStone',name:'消耗靈石',point:15,unit:'顆',step:200,costResource:'靈石'}]}
+];
+const FREE_RECOMMEND={mon:{stamina:650,heroSupply:1,adventurerSupply:4},tue:{goblinMiner:140,spiritStone:16000},wed:{guildRaid:2,petEgg:3990},thu:{dailyDungeon:22,bronzeBox:300,silverBox:50},fri:{guruTicket:5,gemDraw:14},sat:{dungeonTicket:5,horseshoe:938},sun:{arena:5,heroSupply:1,adventurerSupply:4,spiritStone:9200,petEgg:1750}};
+let activeKey='mon'; const state={}; dayDefs.forEach(day=>{state[day.key]={}; day.tasks.forEach(t=>state[day.key][t.id]=Number(t.def||0));});
+const $=id=>document.getElementById(id); const fmt=n=>Math.round(n).toLocaleString('en-US'); const clampNum=v=>{const n=Math.floor(Number(v)); return Number.isFinite(n)&&n>0?n:0;};
+function dayByKey(key){return dayDefs.find(d=>d.key===key);} function getTask(day,key){return day.tasks.find(t=>t.id===key);} function escapeHtml(s){return String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
+function parseItem(item){const m=String(item).match(/^(.+)\*(\d+)$/); return m?{name:m[1],qty:Number(m[2])}:{name:item,qty:1};}
+function calcDay(key){const day=dayByKey(key); let score=0,warnings=[]; day.tasks.forEach(t=>{const val=clampNum(state[key][t.id]); score+=val*t.point; if(t.limit!=null&&val>t.limit)warnings.push(`${t.name} 超過上限 ${t.limit} ${t.unit}`);}); let stars=0; STAGES.forEach(s=>{if(score>=s.score)stars+=s.stars;}); return {score,need:Math.max(0,TARGET-score),stars:Math.min(6,stars),warnings};}
+function earnedStageCount(score){let n=0; STAGES.forEach(s=>{if(score>=s.score)n++;}); return n;}
+const RESOURCE_ORDER=['紫寶石','神威錘','金蹄鐵','寵物蛋','靈石','青銅寶箱','白銀寶箱','黃金寶箱','寵物寶箱','傳說鑰匙','寶石鑰匙','咕嚕票券','暗月銀券','暗月金券','卡皮機銀幣'];
+const RESOURCE_ALIAS={'銀寶箱':'白銀寶箱','珍寶商店抽寶石':'寶石鑰匙','珍寶商店抽寶石次數':'寶石鑰匙'};
+function normalizeResource(name){return RESOURCE_ALIAS[name]||name;}
+function isTrackedResource(name){return RESOURCE_ORDER.includes(normalizeResource(name));}
+function addTracked(total,name,qty){const normalized=normalizeResource(name); if(!RESOURCE_ORDER.includes(normalized))return; total[normalized]=(total[normalized]||0)+qty;}
+function aggregateRewards(){const total={}; const add=(item)=>{const p=parseItem(item); addTracked(total,p.name,p.qty);}; dayDefs.forEach(day=>{const count=earnedStageCount(calcDay(day.key).score); for(let i=0;i<count;i++)(DAILY_REWARDS[day.key][i]||[]).forEach(add);}); let rawStars=0; dayDefs.forEach(d=>rawStars+=calcDay(d.key).stars); const capped=Math.min(30,rawStars); WEEKLY_REWARDS.forEach(r=>{if(capped>=r.stars)r.items.forEach(add);}); return total;}
+function aggregateCosts(){const total={}; dayDefs.forEach(day=>{day.tasks.forEach(t=>{const val=clampNum(state[day.key][t.id]); if(val>0){addTracked(total,t.costResource||t.name,val);}});}); return total;}
+function aggregateNet(){const rewards=aggregateRewards(), costs=aggregateCosts(), net={}; RESOURCE_ORDER.forEach(k=>{const v=(rewards[k]||0)-(costs[k]||0); if((rewards[k]||0)!==0||(costs[k]||0)!==0||v!==0) net[k]=v;}); return net;}
+function formatNetLines(net){return RESOURCE_ORDER.filter(k=>Object.prototype.hasOwnProperty.call(net,k)).map(k=>{const v=net[k]; if(v>0)return `${k} 淨流入 ${fmt(v)}`; if(v<0)return `${k} 淨流出 ${fmt(Math.abs(v))}`; return `${k} 打平 0`;});}
+function makeTable(note){let html=`<div class="note"><h3>${escapeHtml(note.title)}</h3><div class="table-scroll"><table><thead><tr>${note.headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr></thead><tbody>`; note.rows.forEach(r=>html+=`<tr>${r.map(c=>`<td>${escapeHtml(c)}</td>`).join('')}</tr>`); return html+'</tbody></table></div></div>';}
+function taskStepLine(t){if(!t.step||t.step===1)return ''; return `<div class="task-step">${fmt(t.point*t.step)} 分 / ${fmt(t.step)} ${escapeHtml(t.unit)}</div>`;}
+function render(){
+ $('tabs').innerHTML=dayDefs.map(d=>`<button class="tab ${d.key===activeKey?'active':''}" data-tab="${d.key}" type="button">${d.label}</button>`).join('');
+ $('panels').innerHTML=dayDefs.map(day=>{const tasks=day.tasks.map(t=>{const limit=t.limit!=null?`｜上限 ${t.limit} ${t.unit}`:'｜無上限'; return `<div class="task"><div><div class="task-name">${escapeHtml(t.name)}</div><div class="task-meta">${fmt(t.point)} 分 / ${escapeHtml(t.unit)} ${limit}</div>${taskStepLine(t)}<div class="warn" id="warn-${day.key}-${t.id}"></div></div><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-day="${day.key}" data-task="${t.id}" step="${t.step||1}" value="${state[day.key][t.id]||''}" placeholder="0" /></div>`;}).join(''); const notes=(day.notes||[]).map(makeTable).join(''); return `<section class="card day-panel ${day.key===activeKey?'active':''}" id="panel-${day.key}"><div class="day-title"><h2>${day.title}</h2><span class="mini">只顯示當日任務</span></div><div class="task-list">${tasks}</div><div class="day-total"><div class="pill"><span class="label">當日積分</span><strong id="score-${day.key}">0</strong></div><div class="pill"><span class="label">距離目標</span><strong id="need-${day.key}">0</strong></div><div class="pill"><span class="label">星星</span><strong id="stars-${day.key}">0 / 6</strong></div><div class="pill"><span class="label">狀態</span><strong id="status-${day.key}">未達成</strong></div></div><div class="recommend" id="rec-${day.key}"></div>${notes}</section>`;}).join(''); bindEvents(); updateAll();}
+function bindEvents(){document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{activeKey=btn.dataset.tab; showActive(); updateAll();})); document.querySelectorAll('input[data-day]').forEach(inp=>inp.addEventListener('input',()=>{state[inp.dataset.day][inp.dataset.task]=clampNum(inp.value); updateAll();}));}
+function showActive(){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===activeKey)); document.querySelectorAll('.day-panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+activeKey));}
+function updateAll(){let weekScore=0,rawStars=0; dayDefs.forEach(day=>{let c=calcDay(day.key); weekScore+=c.score; rawStars+=c.stars; const s=$('score-'+day.key),n=$('need-'+day.key),st=$('stars-'+day.key),status=$('status-'+day.key),rec=$('rec-'+day.key); if(s){s.textContent=fmt(c.score); n.textContent=fmt(c.need); st.textContent=`${c.stars} / 6`; status.textContent=c.score>=TARGET?'已達成':'未達成'; status.style.color=c.score>=TARGET?'var(--green)':'var(--text)'; rec.innerHTML=recommendation(day.key,c);} day.tasks.forEach(t=>{const w=$(`warn-${day.key}-${t.id}`); if(w){const val=clampNum(state[day.key][t.id]); if(t.limit!=null&&val>t.limit){w.style.display='block'; w.textContent=`已超過每日上限：${t.limit} ${t.unit}`;}else{w.style.display='none'; w.textContent='';}}});}); const today=calcDay(activeKey); $('todayScore').textContent=fmt(today.score); $('todayNeed').textContent=fmt(today.need); $('todayStars').textContent=today.stars; $('progressBar').style.width=Math.min(100,today.score/TARGET*100).toFixed(2)+'%'; updateStages(today.score); const capped=Math.min(30,rawStars); $('weekScore').textContent=fmt(weekScore); $('weekStars').textContent=capped; $('weekNeedStars').textContent=Math.max(0,30-capped); $('weeklyPrize').textContent=capped>=30?'已達成':'未達成'; $('weeklyPrize').style.color=capped>=30?'var(--green)':'var(--text)'; updateWeekTable(); updateWeeklyRewards(capped);}
+function updateStages(score){const rewards=DAILY_REWARDS[activeKey]||[]; $('stages').innerHTML=STAGES.map((s,i)=>`<div class="stage ${score>=s.score?'done':''}"><div class="t">階段 ${i+1}</div><div class="v">${fmt(s.score)}</div><div class="r">${(rewards[i]||[]).map(escapeHtml).join('，')}</div></div>`).join('');}
+function updateWeeklyRewards(capped){$('weeklyRewards').innerHTML=WEEKLY_REWARDS.map(r=>`<div class="weekly-reward ${capped>=r.stars?'done':''}"><div class="t">滿 ${r.stars} 星｜${r.label}</div><div class="v">${capped>=r.stars?'已達成':'未達成'}</div><div class="r">${r.items.map(escapeHtml).join('，')}</div></div>`).join('');}
+function updateWeekTable(){let html='<thead><tr><th>日期</th><th>積分</th><th>缺口</th><th>星星</th><th>狀態</th></tr></thead><tbody>'; dayDefs.forEach(day=>{const c=calcDay(day.key); html+=`<tr><td>${day.label}</td><td>${fmt(c.score)}</td><td>${fmt(c.need)}</td><td>${c.stars}/6</td><td>${c.score>=TARGET?'已達成':'未達成'}</td></tr>`;}); $('weekTable').innerHTML=html+'</tbody>';}
+function recommendation(key,c){const day=dayByKey(key); if(c.need<=0)return '已達成 245,000 分。'; const options=day.tasks.filter(t=>t.limit==null||clampNum(state[key][t.id])<t.limit).map(t=>{const remaining=t.limit==null?Infinity:t.limit-clampNum(state[key][t.id]); const needCount=Math.ceil(c.need/t.point); const usable=Math.min(needCount,remaining); return {t,needCount,usable,enough:usable>=needCount};}).sort((a,b)=>b.t.point-a.t.point); if(!options.length)return '所有有限次數任務都已達上限，且沒有可補分任務。'; const best=options[0]; if(best.enough)return `補滿建議：再做「${best.t.name}」${fmt(best.needCount)} ${best.t.unit}，可達到或超過 245,000 分。`; return `補滿建議：先做高分任務「${best.t.name}」${fmt(best.usable)} ${best.t.unit}，剩餘缺口再用其他任務補足。`;}
+function autoFill(mode){const key=activeKey,day=dayByKey(key); clearDay(false); let remaining=TARGET; let tasks=[...day.tasks]; if(mode==='limited'){tasks.filter(t=>t.limit!=null).forEach(t=>{state[key][t.id]=t.limit; remaining-=t.limit*t.point;}); tasks=tasks.filter(t=>t.limit==null).sort((a,b)=>b.point-a.point);}else{tasks.sort((a,b)=>b.point-a.point);} for(const t of tasks){if(remaining<=0)break; const cur=clampNum(state[key][t.id]); const maxAdd=t.limit==null?Infinity:Math.max(0,t.limit-cur); const add=Math.min(Math.ceil(remaining/t.point),maxAdd); if(add>0&&Number.isFinite(add)){state[key][t.id]=cur+add; remaining-=add*t.point;}} syncInputs(key); updateAll();}
+function applyFreeRecommend(){clearAll(false); Object.keys(FREE_RECOMMEND).forEach(dayKey=>{Object.assign(state[dayKey],FREE_RECOMMEND[dayKey]); syncInputs(dayKey);}); updateAll(); showToast('已套用無課推薦最省做法');}
+function clearDay(doUpdate=true){const key=activeKey; Object.keys(state[key]).forEach(id=>state[key][id]=0); syncInputs(key); if(doUpdate)updateAll();}
+function restoreDefaultDay(doUpdate=true){const key=activeKey,day=dayByKey(key); day.tasks.forEach(t=>{state[key][t.id]=Number(t.def||0);}); syncInputs(key); if(doUpdate)updateAll();}
+function syncInputs(key){document.querySelectorAll(`input[data-day="${key}"]`).forEach(inp=>{const v=state[key][inp.dataset.task]||0; inp.value=v?String(v):'';});}
+function clearAll(doUpdate=true){Object.keys(state).forEach(k=>Object.keys(state[k]).forEach(id=>state[k][id]=0)); document.querySelectorAll('input[data-day]').forEach(i=>i.value=''); if(doUpdate)updateAll();}
+function showToast(msg){const t=$('toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>{t.style.display='none';},1800);}
+function drawMultiline(ctx,text,x,y,maxWidth,lineHeight){const words=String(text).split(''); let line=''; for(let i=0;i<words.length;i++){const test=line+words[i]; if(ctx.measureText(test).width>maxWidth&&line){ctx.fillText(line,x,y); line=words[i]; y+=lineHeight;}else line=test;} if(line)ctx.fillText(line,x,y); return y+lineHeight;}
+function lineCount(text,maxChars){if(!text)return 1; return Math.max(1,Math.ceil(String(text).length/maxChars));}
+function aggregateItemList(items){
+ const total={}; items.forEach(item=>{const p=parseItem(item); total[p.name]=(total[p.name]||0)+p.qty;}); return total;
 }
-function syncInputs(key){ document.querySelectorAll(`input[data-day="${key}"]`).forEach(inp=>{ const v=state[key][inp.dataset.task] || 0; inp.value = v ? String(v) : ''; }); }
-function clearAll(){ Object.keys(state).forEach(k=>Object.keys(state[k]).forEach(id=>state[k][id]=0)); document.querySelectorAll('input[data-day]').forEach(i=>i.value=''); updateAll(); }
-function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines){
-  const raw = String(text || '').split('\n');
-  let lines = [];
-  raw.forEach(part=>{
-    let line = '';
-    for(const ch of part){
-      const test = line + ch;
-      if(ctx.measureText(test).width > maxWidth && line){ lines.push(line); line = ch; }
-      else line = test;
-    }
-    lines.push(line);
-  });
-  if(maxLines && lines.length > maxLines){
-    lines = lines.slice(0, maxLines);
-    let last = lines[lines.length-1] || '';
-    while(ctx.measureText(last + '…').width > maxWidth && last.length) last = last.slice(0,-1);
-    lines[lines.length-1] = last + '…';
-  }
-  lines.forEach((line, idx)=>ctx.fillText(line, x, y + idx * lineHeight));
-  return lines.length * lineHeight;
+function mapToLines(obj,emptyText){
+ const keys=Object.keys(obj).sort(); if(!keys.length)return [emptyText]; return keys.map(k=>`${k}*${fmt(obj[k])}`);
 }
-function collectTaskLines(day){
-  const lines = [];
-  day.tasks.forEach(t=>{
-    const val = clampNum(state[day.key][t.id]);
-    if(val > 0) lines.push(`${t.name}：${fmt(val)} ${t.unit}（${fmt(val * t.point)}分）`);
-  });
-  return lines.length ? lines : ['未填入任務'];
+function drawLineList(ctx,lines,x,y,lineHeight,maxLines){
+ const use=lines.slice(0,maxLines||999); use.forEach((line,i)=>ctx.fillText(line,x,y+i*lineHeight));
+ if(maxLines&&lines.length>maxLines)ctx.fillText(`…另 ${lines.length-maxLines} 項`,x,y+use.length*lineHeight);
+ return y+use.length*lineHeight;
 }
-function recordCurrentSetup(){
-  updateAll();
-  const scale = 2;
-  const W = 1400, pad = 44;
-  const rowHeights = dayDefs.map(day=>Math.max(104, 36 + collectTaskLines(day).length * 34));
-  const H = 230 + rowHeights.reduce((a,b)=>a+b,0) + 260;
-  const canvas = document.createElement('canvas');
-  canvas.width = W * scale; canvas.height = H * scale;
-  const ctx = canvas.getContext('2d');
-  ctx.scale(scale, scale);
-  ctx.fillStyle = '#f8fafc'; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle = '#172033'; ctx.font = 'bold 34px system-ui, -apple-system, "Noto Sans TC", sans-serif';
-  ctx.fillText('水豚馬拉松｜本週任務設置紀錄', pad, 58);
-  ctx.font = '20px system-ui, -apple-system, "Noto Sans TC", sans-serif'; ctx.fillStyle = '#667085';
-  ctx.fillText(`產生時間：${new Date().toLocaleString('zh-TW')}`, pad, 94);
-  let weekScore = 0, rawStars = 0, weekRewards = {};
-  dayDefs.forEach(day=>{ const c=calcDay(day.key); weekScore += c.score; rawStars += c.stars; const r=achievedRewards(c.score); Object.entries(r).forEach(([k,v])=>weekRewards[k]=(weekRewards[k]||0)+v); });
-  const cappedStars = Math.min(30, rawStars);
-  ctx.fillStyle = '#ffffff'; roundRect(ctx, pad, 118, W-pad*2, 74, 18, true, false);
-  ctx.fillStyle = '#172033'; ctx.font = 'bold 24px system-ui, -apple-system, "Noto Sans TC", sans-serif';
-  ctx.fillText(`本週總積分：${fmt(weekScore)}　｜　本週星星：${cappedStars}/30　｜　每週大獎：${cappedStars>=30?'已達成':'未達成'}`, pad+22, 164);
-  const xDay=pad, xTasks=150, xScore=760, xReward=940;
-  let y = 224;
-  ctx.fillStyle = '#e2e8f0'; roundRect(ctx, pad, y-34, W-pad*2, 42, 12, true, false);
-  ctx.fillStyle = '#334155'; ctx.font = 'bold 20px system-ui, -apple-system, "Noto Sans TC", sans-serif';
-  ctx.fillText('日期', xDay+12, y-7); ctx.fillText('任務配置', xTasks, y-7); ctx.fillText('積分 / 星星', xScore, y-7); ctx.fillText('預期階段獎勵', xReward, y-7);
-  y += 10;
-  dayDefs.forEach((day, idx)=>{
-    const h = rowHeights[idx]; const c = calcDay(day.key);
-    ctx.fillStyle = idx % 2 === 0 ? '#ffffff' : '#f8fafc'; roundRect(ctx, pad, y, W-pad*2, h-8, 12, true, false);
-    ctx.fillStyle = '#172033'; ctx.font = 'bold 22px system-ui, -apple-system, "Noto Sans TC", sans-serif'; ctx.fillText(day.label, xDay+12, y+34);
-    ctx.font = '18px system-ui, -apple-system, "Noto Sans TC", sans-serif'; ctx.fillStyle = '#344054';
-    wrapCanvasText(ctx, collectTaskLines(day).join('、'), xTasks, y+32, 560, 28, Math.floor((h-26)/28));
-    ctx.font = 'bold 19px system-ui, -apple-system, "Noto Sans TC", sans-serif'; ctx.fillStyle = c.score >= TARGET ? '#16a34a' : '#dc2626';
-    ctx.fillText(`${fmt(c.score)} 分`, xScore, y+32);
-    ctx.fillStyle = '#344054'; ctx.font = '18px system-ui, -apple-system, "Noto Sans TC", sans-serif'; ctx.fillText(`${c.stars}/6 星`, xScore, y+62);
-    ctx.fillStyle = '#344054';
-    wrapCanvasText(ctx, rewardSummaryText(achievedRewards(c.score)), xReward, y+32, 390, 28, Math.floor((h-26)/28));
-    y += h;
-  });
-  y += 22;
-  ctx.fillStyle = '#ffffff'; roundRect(ctx, pad, y, W-pad*2, 170, 18, true, false);
-  ctx.fillStyle = '#172033'; ctx.font = 'bold 24px system-ui, -apple-system, "Noto Sans TC", sans-serif'; ctx.fillText('本週預期總獎勵', pad+22, y+42);
-  ctx.font = '20px system-ui, -apple-system, "Noto Sans TC", sans-serif'; ctx.fillStyle = '#344054';
-  wrapCanvasText(ctx, rewardSummaryText(weekRewards), pad+22, y+82, W-pad*2-44, 32, 3);
-  ctx.font = '16px system-ui, -apple-system, "Noto Sans TC", sans-serif'; ctx.fillStyle = '#667085';
-  ctx.fillText('註：星星每週獎勵上限仍以遊戲內 30 顆為準；此圖依目前填入數值估算每日階段獎勵。', pad+22, y+146);
-  const link = document.createElement('a');
-  link.download = `capybara-weekly-plan-${new Date().toISOString().slice(0,10)}.png`;
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+function generateRecordImage(){
+ const scale=2,width=1280;
+ const dayRows=dayDefs.map(day=>{
+   const c=calcDay(day.key);
+   const nonzero=day.tasks.filter(t=>clampNum(state[day.key][t.id])>0).map(t=>`${t.name} ${fmt(state[day.key][t.id])}${t.unit}`);
+   const stageCount=earnedStageCount(c.score);
+   const rewardItems=[];
+   for(let i=0;i<stageCount;i++) rewardItems.push(...(DAILY_REWARDS[day.key][i]||[]));
+   const rewardLines=mapToLines(aggregateItemList(rewardItems),'尚未取得階段獎勵');
+   return {day,c,nonzero,rewardLines};
+ });
+ const rewardsTotal=aggregateRewards(), costsTotal=aggregateCosts(), netTotal=aggregateNet();
+ const resources=RESOURCE_ORDER.filter(res=>(rewardsTotal[res]||0)!==0||(costsTotal[res]||0)!==0);
+ let rawStars=0,weekScore=0; dayRows.forEach(r=>{rawStars+=r.c.stars; weekScore+=r.c.score;}); const capped=Math.min(30,rawStars);
+ const dayBlockHeights=dayRows.map(r=>{
+   const taskLines=Math.max(1,r.nonzero.length);
+   const rewardLines=Math.max(1,r.rewardLines.length);
+   return 62+Math.max(taskLines,rewardLines)*24+22;
+ });
+ const chunkSize=6;
+ const chunks=[]; for(let i=0;i<resources.length;i+=chunkSize)chunks.push(resources.slice(i,i+chunkSize));
+ const summaryH=resources.length? 58 + chunks.length*142 : 112;
+ const height=190 + dayBlockHeights.reduce((a,b)=>a+b+10,0) + summaryH + 32;
+ const canvas=document.createElement('canvas'); canvas.width=width*scale; canvas.height=height*scale; const ctx=canvas.getContext('2d'); ctx.scale(scale,scale);
+ ctx.fillStyle='#f6f8fb'; ctx.fillRect(0,0,width,height);
+ ctx.fillStyle='#172033'; ctx.font='bold 32px "Microsoft JhengHei", "Noto Sans TC", Arial'; ctx.fillText('水豚馬拉松｜本週任務配置圖表',34,48);
+ ctx.font='15px "Microsoft JhengHei", "Noto Sans TC", Arial'; ctx.fillStyle='#667085'; ctx.fillText(new Date().toLocaleString('zh-TW'),34,76);
+ ctx.fillStyle='#ffffff'; ctx.strokeStyle='#e5e7eb'; ctx.lineWidth=1; roundRect(ctx,34,94,width-68,64,16,true,true);
+ ctx.fillStyle='#172033'; ctx.font='bold 21px "Microsoft JhengHei", "Noto Sans TC", Arial'; ctx.fillText(`本週總積分：${fmt(weekScore)}　　本週星星：${capped}/30　　每週大獎：${capped>=30?'已達成':'未達成'}`,56,134);
+ let y=174;
+ dayRows.forEach((r,idx)=>{
+   const blockH=dayBlockHeights[idx];
+   ctx.fillStyle='#ffffff'; ctx.strokeStyle='#e5e7eb'; roundRect(ctx,34,y,width-68,blockH,16,true,true);
+   ctx.fillStyle='#2563eb'; ctx.font='bold 20px "Microsoft JhengHei", "Noto Sans TC", Arial';
+   ctx.fillText(`${r.day.label}｜${fmt(r.c.score)} 分｜${r.c.stars}/6 星｜${r.c.score>=TARGET?'達成':'未達成'}`,56,y+30);
+   ctx.fillStyle='#475467'; ctx.font='bold 15px "Microsoft JhengHei", "Noto Sans TC", Arial'; ctx.fillText('任務',56,y+58); ctx.fillText('預期獎勵',660,y+58);
+   ctx.fillStyle='#172033'; ctx.font='15px "Microsoft JhengHei", "Noto Sans TC", Arial';
+   const tasks=r.nonzero.length?r.nonzero:['尚未設定任務'];
+   drawLineList(ctx,tasks,56,y+82,24,8);
+   drawLineList(ctx,r.rewardLines,660,y+82,24,8);
+   y+=blockH+10;
+ });
+ ctx.fillStyle='#ffffff'; ctx.strokeStyle='#e5e7eb'; roundRect(ctx,34,y,width-68,summaryH,16,true,true);
+ ctx.fillStyle='#172033'; ctx.font='bold 22px "Microsoft JhengHei", "Noto Sans TC", Arial'; ctx.fillText('本週資源彙整',56,y+36);
+ if(!resources.length){
+   ctx.font='16px "Microsoft JhengHei", "Noto Sans TC", Arial'; ctx.fillStyle='#667085'; ctx.fillText('尚未設定消耗，也尚未取得獎勵。',56,y+72);
+ }else{
+   let ty=y+58;
+   chunks.forEach(cols=>{
+     const labelW=118, colW=Math.floor((width-68-44-labelW)/cols.length), rowH=30;
+     const x0=56, tableW=labelW+colW*cols.length;
+     ctx.fillStyle='#f1f5f9'; ctx.fillRect(x0,ty,tableW,rowH);
+     ctx.strokeStyle='#cbd5e1'; ctx.strokeRect(x0,ty,tableW,rowH*4);
+     ctx.fillStyle='#334155'; ctx.font='bold 13px "Microsoft JhengHei", "Noto Sans TC", Arial'; ctx.fillText('資源',x0+10,ty+20);
+     cols.forEach((res,i)=>{ctx.fillText(res,x0+labelW+i*colW+8,ty+20);});
+     const rows=[['獲得',rewardsTotal,'#16a34a'],['消耗',costsTotal,'#dc2626'],['淨流入/出',netTotal,'#7c3aed']];
+     rows.forEach((row,ri)=>{
+       const yy=ty+rowH*(ri+1);
+       ctx.fillStyle=ri%2===0?'#ffffff':'#f8fafc'; ctx.fillRect(x0,yy,tableW,rowH);
+       ctx.strokeStyle='#e5e7eb'; ctx.beginPath(); ctx.moveTo(x0,yy); ctx.lineTo(x0+tableW,yy); ctx.stroke();
+       ctx.fillStyle=row[2]; ctx.font='bold 13px "Microsoft JhengHei", "Noto Sans TC", Arial'; ctx.fillText(row[0],x0+10,yy+20);
+       ctx.fillStyle='#172033'; ctx.font='13px "Microsoft JhengHei", "Noto Sans TC", Arial';
+       cols.forEach((res,i)=>{
+         let val=row[1][res]||0;
+         let text='0';
+         if(row[0]==='淨流入/出') text=val>0?`+${fmt(val)}`:(val<0?`-${fmt(Math.abs(val))}`:'0');
+         else text=fmt(val);
+         ctx.fillText(text,x0+labelW+i*colW+8,yy+20);
+       });
+     });
+     for(let i=0;i<=cols.length;i++){const xx=x0+labelW+i*colW; ctx.strokeStyle='#e5e7eb'; ctx.beginPath(); ctx.moveTo(xx,ty); ctx.lineTo(xx,ty+rowH*4); ctx.stroke();}
+     ty+=rowH*4+18;
+   });
+ }
+ const link=document.createElement('a'); link.download='水豚馬拉松_本週任務配置圖表.png'; link.href=canvas.toDataURL('image/png'); link.click(); showToast('已產生本週任務配置圖表');
 }
-function roundRect(ctx, x, y, w, h, r, fill, stroke){
-  if(w < 2*r) r = w/2; if(h < 2*r) r = h/2;
-  ctx.beginPath(); ctx.moveTo(x+r, y); ctx.arcTo(x+w, y, x+w, y+h, r); ctx.arcTo(x+w, y+h, x, y+h, r); ctx.arcTo(x, y+h, x, y, r); ctx.arcTo(x, y, x+w, y, r); ctx.closePath();
-  if(fill) ctx.fill(); if(stroke) ctx.stroke();
-}
-$('recordBtn').addEventListener('click', recordCurrentSetup);
-$('autoMinBtn').addEventListener('click',()=>autoFill('min'));
-$('autoLimitedBtn').addEventListener('click',()=>autoFill('limited'));
-$('restoreDefaultBtn').addEventListener('click',()=>restoreDefaultDay(true));
-$('freePlanBtn').addEventListener('click',applyFreePlan);
-$('clearDayBtn').addEventListener('click',()=>clearDay(true));
-$('clearAllBtn').addEventListener('click',clearAll);
-render();
-window.__missionCalcTest = {dayDefs,state,calcDay,setActive:(k)=>{activeKey=k;showActive();updateAll();},autoFill,clearDay,restoreDefaultDay,applyFreePlan,clearAll,achievedRewards,rewardSummaryText,recordCurrentSetup};
+function roundRect(ctx,x,y,w,h,r,fill,stroke){if(w<2*r)r=w/2;if(h<2*r)r=h/2;ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();if(fill)ctx.fill();if(stroke)ctx.stroke();}
+$('freeRecommendBtn').addEventListener('click',applyFreeRecommend); $('autoMinBtn').addEventListener('click',()=>autoFill('min')); $('autoLimitedBtn').addEventListener('click',()=>autoFill('limited')); $('restoreDefaultBtn').addEventListener('click',()=>restoreDefaultDay(true)); $('clearDayBtn').addEventListener('click',()=>clearDay(true)); $('clearAllBtn').addEventListener('click',()=>clearAll(true)); $('recordBtn').addEventListener('click',generateRecordImage);
+render(); window.__missionCalcTest={dayDefs,state,calcDay,setActive:(k)=>{activeKey=k;showActive();updateAll();},autoFill,clearDay,restoreDefaultDay,clearAll,applyFreeRecommend,aggregateRewards,aggregateCosts,aggregateNet,DAILY_REWARDS,WEEKLY_REWARDS};
 })();
 </script>
 </body>
