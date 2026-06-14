@@ -230,7 +230,7 @@ const MAX_PICK=STAGES.reduce((a,s)=>a+s.pick,0);
 const FINAL=STAGES[STAGES.length-1].score;
 const DAYS=[
  {key:'d1',label:'週一',title:'週一｜裝備寶箱',tasks:[
-   {id:'stamina',name:'消耗體力',point:100,unit:'點'},
+   {id:'stamina',name:'消耗體力',point:100,unit:'點',step:5},
    {id:'equipDraw',name:'限定秘藏箱／傳說秘寶箱 抽1次裝備',point:1000,unit:'次'},
    {id:'spiritCube',name:'靈能洗練 消耗神兵魔方',point:5000,unit:'個'},
    {id:'dungeon',name:'通關任意副本',point:200,unit:'次'},
@@ -241,7 +241,7 @@ const DAYS=[
  ]},
  {key:'d2',label:'週二',title:'週二｜寵物培育',tasks:[
    {id:'tradeShip',name:'卡皮貿易 發UR/閃金商船',point:8000,unit:'艘'},
-   {id:'petStone',name:'寵物培育 消耗靈石',point:5,unit:'個'},
+   {id:'petStone',name:'寵物培育 消耗靈石',point:5,unit:'個',step:200},
    {id:'treasureDraw',name:'珍寶商店 抽1次秘寶',point:1000,unit:'次'},
    {id:'dungeon',name:'通關任意副本',point:200,unit:'次'},
    {id:'guildRaid',name:'挑戰公會討伐',point:1000,unit:'次'},
@@ -250,8 +250,8 @@ const DAYS=[
    {id:'gift',name:'購買價值100翡翠石禮包',point:50,unit:'個'}
  ]},
  {key:'d3',label:'週三',title:'週三',tasks:[
-   {id:'stamina',name:'消耗體力',point:200,unit:'點'},
-   {id:'petEgg',name:'開啟寵物蛋',point:20,unit:'個'},
+   {id:'stamina',name:'消耗體力',point:200,unit:'點',step:5},
+   {id:'petEgg',name:'開啟寵物蛋',point:20,unit:'個',step:35},
    {id:'brand',name:'抽烙印',point:1000,unit:'次'},
    {id:'dungeon',name:'通關任意副本',point:200,unit:'次'},
    {id:'guildRaid',name:'挑戰公會討伐',point:1000,unit:'次'},
@@ -283,7 +283,7 @@ const DAYS=[
    {id:'horseshoe',name:'坐騎升級 消耗金蹄鐵',point:10,unit:'個'},
    {id:'brand',name:'抽烙印',point:1000,unit:'次'},
    {id:'dungeon',name:'通關任意副本',point:200,unit:'次'},
-   {id:'stamina',name:'消耗體力',point:200,unit:'點'},
+   {id:'stamina',name:'消耗體力',point:200,unit:'點',step:5},
    {id:'guildRaid',name:'挑戰公會討伐',point:1000,unit:'次'},
    {id:'goblin',name:'哥布林礦工挖礦',point:20,unit:'次'},
    {id:'arena',name:'挑戰競技場',point:400,unit:'次'},
@@ -303,7 +303,7 @@ function render(){
  $('archMaxPick').textContent=MAX_PICK;
  $('archTabs').innerHTML=DAYS.map(d=>`<button class="atab ${d.key===activeKey?'active':''}" data-atab="${d.key}" type="button">${esc(d.label)}</button>`).join('');
  $('archPanels').innerHTML=DAYS.map(day=>{
-   const tasks=day.tasks.map(t=>`<div class="task"><div><div class="task-name">${esc(t.name)}</div><div class="task-meta">${fmt(t.point)} 分 / ${esc(t.unit)}</div></div><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-aday="${day.key}" data-atask="${t.id}" value="${state[day.key][t.id]||''}" placeholder="0" /></div>`).join('');
+   const tasks=day.tasks.map(t=>{const stepLine=(t.step&&t.step!==1)?`<div class="task-step">${fmt(t.point*t.step)} 分 / ${fmt(t.step)} ${esc(t.unit)}</div>`:''; return `<div class="task"><div><div class="task-name">${esc(t.name)}</div><div class="task-meta">${fmt(t.point)} 分 / ${esc(t.unit)}</div>${stepLine}</div><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-aday="${day.key}" data-atask="${t.id}" step="${t.step||1}" value="${state[day.key][t.id]||''}" placeholder="0" /></div>`;}).join('');
    return `<section class="card apanel ${day.key===activeKey?'active':''}" id="arch-panel-${day.key}"><div class="day-title"><h2>${esc(day.title)}</h2><span class="mini">當日積分獨立計算</span></div><div class="task-list">${tasks}</div><div class="day-total"><div class="pill"><span class="label">當日積分</span><strong id="arch-score-${day.key}">0</strong></div><div class="pill"><span class="label">當日鎬子</span><strong id="arch-pick-${day.key}">0</strong></div><div class="pill"><span class="label">達成階段</span><strong id="arch-stage-${day.key}">0 / 9</strong></div><div class="pill"><span class="label">下一階段還需</span><strong id="arch-next-${day.key}">—</strong></div></div></section>`;
  }).join('');
  bindEvents(); updateAll();
