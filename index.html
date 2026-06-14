@@ -89,7 +89,7 @@ const dayDefs=[
 ];
 const FREE_RECOMMEND={mon:{stamina:650,heroSupply:1,adventurerSupply:4},tue:{goblinMiner:140,spiritStoneBase:80},wed:{guildRaid:2,petEgg:3990},thu:{dailyDungeon:22,bronzeBox:300,silverBox:50},fri:{guruTicket:5,gemDraw:14},sat:{dungeonTicket:5,horseshoe:938},sun:{arena:5,heroSupply:1,adventurerSupply:4,spiritStoneBase:46,petEgg:1750}};
 const SYNC_MAP={stamina:'stamina',goblinMiner:'goblin',guildRaid:'guildRaid',petEgg:'petEgg',dailyDungeon:'dungeon',guruTicket:'guruTicket',horseshoe:'horseshoe',arena:'arena',equipBox:'equip',gemDraw:'gem',bronzeBox:'bronzeBox',silverBox:'silverBox',goldBox:'goldBox',petBox:'petBox',spiritStoneBase:'spiritStone',spiritStoneStable1:'spiritStone',spiritStoneStable2:'spiritStone',spiritStoneStable3:'spiritStone',spiritStoneStable4:'spiritStone'};
-const SYNC_PER={};
+const SYNC_PER={spiritStoneBase:200,spiritStoneStable1:200,spiritStoneStable2:200,spiritStoneStable3:200,spiritStoneStable4:200};
 const SYNC_PRIMARY={spiritStoneBase:1};
 let activeKey='mon'; const state={}; dayDefs.forEach(day=>{state[day.key]={}; day.tasks.forEach(t=>state[day.key][t.id]=Number(t.def||0));});
 const $=id=>document.getElementById(id); const fmt=n=>Math.round(n).toLocaleString('en-US'); const clampNum=v=>{const n=Math.floor(Number(v)); return Number.isFinite(n)&&n>0?n:0;};
